@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+</script>
+</head>
+<body>
+    <canvas style="border: 2px solid #c3c3c3" id="haha" height="300" width="300"></canvas>
+    <button id="detect">识别</button>
+    <div id="233">结果:</div>
+    <script>
+        var flag = false;
+        let x = 0, y = 0;
+        let cas = document.getElementById('haha');
+        cas.onmousedown = (e)=>{
+            flag = true
+            x = e.offsetX
+            y = e.offsetY
+            let c = document.getElementById('haha').getContext("2d");
+            c.moveTo(x,y)
+        }
+        cas.onmousemove = (e)=>{
+            nx = e.offsetX
+            ny = e.offsetY
+            if(flag){
+                let c = document.getElementById('haha').getContext("2d");
+                c.lineWidth = 8;
+                c.lineTo(nx, ny)
+                c.stroke();
+            }
+        }
+        cas.onmouseup = (e)=>{
+            flag = false
+        }
+        cas.ontouchstart = (e)=>{
+            console.log("start")
+            flag = true
+            x = e.changedTouches[0].clientX - e.target.offsetLeft
+            y = e.changedTouches[0].clientY - e.target.offsetTop
+            let c = document.getElementById('haha').getContext("2d");
+            c.moveTo(x,y)
+        }
+
+        cas.ontouchmove = (e)=>{
+            console.log(e)
+            e.preventDefault()
+            nx = e.changedTouches[0].clientX - e.target.offsetLeft
+            ny = e.changedTouches[0].clientY - e.target.offsetTop
+            if(flag){
+                let c = document.getElementById('haha').getContext("2d");
+                c.lineWidth = 8;
+                c.lineTo(nx, ny)
+                c.stroke();
+            }
+        }
+        cas.ontouchend = (e)=>{
+            console.log("end")
+            flag = false
+        }
+        $("#detect").click(()=>{
+            let c = document.getElementById('haha')
+            let url = c.toDataURL('image/png');
+            console.log(url)
+            $.post('/catch',
+            {
+                id:url
+            },
+            (d,s) => {
+                $('#233').html('结果:'+d);
+            }
+            )
+        });
+    </script>
+</body>
+
+</html>
